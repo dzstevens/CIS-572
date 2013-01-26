@@ -58,7 +58,7 @@ def grow_tree(data_set, headers=None):
     return Tree('foo')
 
 def split(data, index):
-    filter_ = np.np.array([False if i==index else True for i in range(len(data[0]))])
-    left = data[data[:,2]==0][:,data]
-    right = data[data[:,2]==1][:,data]
+    filter_ = np.array([False if i==index else True for i in range(len(data[0]))])
+    left = data[data[:,index]==0][:,filter_]
+    right = data[data[:,index]==1][:,filter_]
     return left, right
