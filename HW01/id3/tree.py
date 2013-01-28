@@ -7,8 +7,8 @@ import id3.util as util
 class Tree:
     def __init__(self, name, depth=0):
         self.name = name
-        self._left =  0
-        self._right = 1
+        self._left =  None
+        self._right = None
         self.depth = depth
 
     @property
@@ -19,11 +19,12 @@ class Tree:
     def left(self, value):
         if isinstance(value, Tree):
             self._left = value
+            return
         self._left = Tree(value, depth=self.depth+1)
 
     @left.deleter
     def left(self):
-        self._left = 0
+        self._left = None
 
     @property
     def right(self):
@@ -33,18 +34,23 @@ class Tree:
     def right(self, value):
         if isinstance(value, Tree):
             self._right = value
+            return
         self._right = Tree(value, depth=self.depth+1)
     
     @right.deleter
     def right(self):
-        self._right = 1 
+        self._right = None
     
     def __str__(self):
-        str_ = '' if self.depth is 0 else '\n'
-        str_ +=  '{}{} = 0 : {}'.format('| '*self.depth, 
-                                         self.name, self.left)
-        str_ +=  '\n{}{} = 1 : {}'.format('| '*self.depth, 
-                                          self.name, self.right)
+        str_ = ''
+        if self.left is not None:
+            str_ +=  '\n{}{} = 0 : {}'.format('| '*self.depth, 
+                                              self.name, self.left)
+        if self.right is not None:
+            str_ +=  '\n{}{} = 1 : {}'.format('| '*self.depth, 
+                                              self.name, self.right)
+        if self.right is None and self.left is None:
+            str_ += str(self.name)
         return str_
 
     def dump_model(self, output_file):

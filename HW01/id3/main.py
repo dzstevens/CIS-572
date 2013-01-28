@@ -1,11 +1,13 @@
 import sys
 import id3
 import id3.util as util
-
+import id3.id3_tree
 
 def main(training_data_file, test_data_file, model_file):
-    id3_tree = id3.grow_tree(training_data)
-    id3_tree.dump_model(model_file)
+    tree = id3.id3_tree.grow_tree(training_data_file)
+    tree.dump_model(model_file)
+    for row in util.load_test(test_data_file):
+        print(row)
     
 if __name__ == '__main__':
     if sys.version_info[0] != 3:
