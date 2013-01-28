@@ -15,5 +15,6 @@ def verify(f_name):
 def load_test(test_file):
     with open(test_file, newline='') as f:
         f.readline()
-        reader = csv.reader(f, quoting=QUOTE_NONNUMERIC)
-        return reader
+        reader = csv.reader(f, quoting=csv.QUOTE_NONNUMERIC)
+        for row in reader:
+            yield [int(i) for i in row[:-1]], int(row[-1])

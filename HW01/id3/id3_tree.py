@@ -82,14 +82,13 @@ class ID3Tree(tree.Tree):
                 self.right = ID3Tree(right_data, new_headers, self.depth+1)
     
     def classify(self, values):
-        if self.right is None:
-            return self.left
-        if self.left is None:
-            return self.right
-        try:
-            next_child = self.right if values[self.name] else self.left
-        except LookupError:
-            # instance doesn't have this attribute labeled, so always choose left
+        if self.left is None and self.right is None:
+            return self.name
+        elif self.right is None:
             next_child = self.left
-        return next_child if isinstance(next_child, int) \
-                          else next_child.classify(values)
+        elif self.left is None:
+            next_child = self.right
+        else:    
+            next_child = self.right if values[self.name] else self.left
+        return next_child.name if isinstance(next_child.name, int) \
+                               else next_child.classify(values)

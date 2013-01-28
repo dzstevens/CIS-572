@@ -3,11 +3,16 @@ import id3
 import id3.util as util
 import id3.id3_tree
 
+
 def main(training_data_file, test_data_file, model_file):
     tree = id3.id3_tree.grow_tree(training_data_file)
     tree.dump_model(model_file)
-    for row in util.load_test(test_data_file):
-        print(row)
+    answers = []
+    for row, class_ in util.load_test(test_data_file):
+        values = {k:v for k,v in zip(tree.headers, row)}
+        answers.append(tree.classify(values) == class_)
+    accuracy = sum(answers) / len(answers)
+    print('Accuracy: {:.2%}'.format(accuracy))
     
 if __name__ == '__main__':
     if sys.version_info[0] != 3:
