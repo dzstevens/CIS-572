@@ -1,11 +1,14 @@
 import numpy as np
 from collections import Sequence
 
+import id3
+import id3.util as util
+
 class Tree:
-    def __init__(self, name, flip=False, depth=0):
+    def __init__(self, name, depth=0):
         self.name = name
-        self._left =  self._zero_side = 0 ^ flip
-        self._right = 1 ^ flip 
+        self._left =  0
+        self._right = 1
         self.depth = depth
 
     @property
@@ -14,13 +17,13 @@ class Tree:
 
     @left.setter
     def left(self, value):
-        if not isinstance(value, tuple):
-            value = (value, False)
-        self._left = Tree(*value, depth=self.depth+1)
+        if isinstance(value, Tree):
+            self._left = value
+        self._left = Tree(value, depth=self.depth+1)
 
     @left.deleter
     def left(self):
-        self._left = 0 ^ self._zero_side
+        self._left = 0
 
     @property
     def right(self):
@@ -28,13 +31,13 @@ class Tree:
 
     @right.setter
     def right(self, value):
-        if not isinstance(value, tuple):
-            value = (value, False)
-        self._right = Tree(*value, depth=self.depth+1)
+        if isinstance(value, Tree):
+            self._right = value
+        self._right = Tree(value, depth=self.depth+1)
     
     @right.deleter
     def right(self):
-        self._right = 1 ^ self._zero_side
+        self._right = 1 
     
     def __str__(self):
         str_ = '' if self.depth is 0 else '\n'
@@ -44,21 +47,6 @@ class Tree:
                                           self.name, self.right)
         return str_
 
-    def classify(self, values):
-        try:
-            next_child = self.right if values[self.name] else self.left
-        except LookupError:
-            # instance doesn't have this attribute labeled, so always choose left
-            next_child = self.left
-        return next_child if isinstance(next_child, int) \
-                          else next_child.classify(values)
-
-
-def grow_tree(data_set, headers=None):
-    return Tree('foo')
-
-def split(data, index):
-    filter_ = np.array([False if i==index else True for i in range(len(data[0]))])
-    left = data[data[:,index]==0][:,filter_]
-    right = data[data[:,index]==1][:,filter_]
-    return left, right
+    def dump_model(self, output_file):
+        with open(output_file, 'w') as f:
+            f.write('{}\n'.format(self))
