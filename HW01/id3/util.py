@@ -1,4 +1,5 @@
 import errno
+import sys
 import csv
 
 def verify(f_name):
