@@ -38,7 +38,7 @@ if __name__ == '__main__':
         sys.exit(1)
     args = sys.argv
     if len(args) != 4:
-        sys.stderr.write('Proper usage:\n\n\tpython -m id3.main.py <training_input_file> <test_input_file> <model_output_file>\n\n')
+        sys.stderr.write('Proper usage:\n\n\tpython -m id3.main <training_input_file> <test_input_file> <model_output_file>\n\n')
         sys.exit(1)
     for f_name in args[1:3]:
         util.verify(f_name)
