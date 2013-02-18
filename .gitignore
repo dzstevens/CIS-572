@@ -34,3 +34,8 @@ nosetests.xml
 .project
 .pydevproject
 *.pdf
+HW01/mushrooms
+HW02/spambase
+*.model
+*.zip
+HW03/spambase
