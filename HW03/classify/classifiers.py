@@ -1,20 +1,26 @@
 import math
-import progressbar
-from collections import Counter
+from collections import Counter, defaultdict
 
 import classify.util as util
 
 
 def sigmoid(x):
-    return 1 / (1 + math.exp(-1 * x))
+    try:
+        return 1 / (1 + math.exp(-x))
+    except OverflowError:
+        return 0
 
+def magnitude(X):
+    return math.sqrt(sum(x**2 for x in X))
+
+def cond_log_likelihood(weights, row):
+    return sigmoid(sum(v * weights[k] for k,v in row.items()))
 
 class Classifier:
 
     def __init__(self):
         raise NotImplementedError
 
-   
     def __str__(self):
         str_ = '{}\n'.format(self.weights['base'])
         for k in sorted(self.weights):
@@ -22,22 +28,24 @@ class Classifier:
                 str_ += '{}\t{}\n'.format(k, round(self.weights[k], 4))
         return str_
 
-    def score(self, row):
+    def score(self, row, false=0):
         try:
             del row['spam']
         except KeyError:
             pass
         score = self.weights['base']
         for k, v in row.items():
-            if v:
-                score += self.weights[k]
+            if v != 1:
+                v = false
+            score += self.weights[k] * v
         return score
 
     def get_prob(self, row):
         return sigmoid(self.score(row))
 
     def classify(self, row):
-        return round(self.get_prob(row))
+        x = round(self.get_prob(row))
+        return x
 
     def dump(self, model_file):
         with open(model_file, 'w') as f:
@@ -82,36 +90,82 @@ class NaiveBayesClassifier(Classifier):
 class LogisticRegressionClassifier(Classifier):
     
     def __init__(self, train_data, eta, sigma):
-        pass
-
-
-class PerceptronClassifier(Classifier):
-    def __init__(self, train_data, eta):
         eta = float(eta)
-        headers = util.get_headers(train_data)
+        sigma = float(sigma)
+        headers = ['base'] + util.get_headers(train_data)
         self.weights = dict.fromkeys(headers, 0)
-        self.weights['base'] = 0
-        p = progressbar.ProgressBar(widgets=[progressbar.Percentage()], maxval=100).start()
         for i in range(100):
-            error = False
+            gradient = dict.fromkeys(headers, 0)
             for row in util.get_rows(train_data):
                 target = row['spam']
                 del row['spam']
-                for x in row:
-                    if x:
-                        output = self.classify(row)
-                        if row != target:
-                            self.weights[x] += eta * (target - output)
-                            error = True
-            p.update(i+1)
+                row['base'] = 1
+                w = target - cond_log_likelihood(self.weights, row)
+                for f, x in row.items():
+                    gradient[f] += x*w
+            for f in self.weights:
+                gradient[f] -= self.weights[f] / (sigma**2)
+            if magnitude(gradient.values()) < 0.01:
+                break
+            for f in self.weights:
+                self.weights[f] += eta * gradient[f]
+
+
+
+class StochasticLogisticRegressionClassifier(Classifier):
+    
+    def __init__(self, train_data, eta, sigma):
+        eta = float(eta)
+        sigma = float(sigma)
+        headers = ['base'] + util.get_headers(train_data)
+        self.weights = dict.fromkeys(headers, 0)
+        for i in range(100):
+            gradient = defaultdict(float)
+            for row in util.get_rows(train_data, shuffle=True):
+                target = row['spam']
+                del row['spam']
+                row['base'] = 1
+                w = target - cond_log_likelihood(self.weights, row)
+                for f, x in row.items():
+                    gradient[f] = x*w - (self.weights[f] / (sigma**2))
+                if magnitude(gradient.values()) < 0.01:
+                    break
+                for f in self.weights:
+                    self.weights[f] += eta * gradient[f]
+
+
+class PerceptronClassifier(Classifier):
+
+    def __init__(self, train_data, eta, false=0):
+        eta = float(eta)
+        self.false = int(false)
+        headers = ['base'] + util.get_headers(train_data)
+        self.weights = dict.fromkeys(headers, 0)
+        for i in range(100):
+            error = False
+            for row in util.get_rows(train_data, false=self.false):
+                target = row['spam']
+                del row['spam']
+                output = self.classify(row)
+                if output != target:
+                    error = True
+                    delta = eta * (target - output)
+                    row['base'] = 1
+                    for x in row:
+                        self.weights[x] += delta * row[x]
             if not error:
                 break
-        p.finish()
 
+    def classify(self, row):
+        return 1 if self.score(row, self.false) > 0 else self.false
 
-CLASSIFIERS = {'naive_bayes' : NaiveBayesClassifier,
-               'logistic'    : LogisticRegressionClassifier,
-               'perceptron'  : PerceptronClassifier}
+    def get_prob(self, row):
+        return sigmoid(self.score(row, self.false))
+
+CLASSIFIERS = {'naive_bayes'   : NaiveBayesClassifier,
+               'logistic'      : LogisticRegressionClassifier,
+               'stochastic_lr' : StochasticLogisticRegressionClassifier,
+               'perceptron'    : PerceptronClassifier}
 
 def get_classfier(name, train_data, opts):
     try:
