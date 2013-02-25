@@ -41,7 +41,7 @@ def best_split(data, chi=False):
     classes = data[-1]
     data = data [:-1]
     if chi:
-        filter_ = np.array([chi_squared(row, classes) > chi for row in data[:-1]])
+        filter_ = np.array([chi_squared(row, classes) > chi for row in data[:-1]], dtype=bool)
         data = data[filter_]
     if len(data) == 0:
         return -1

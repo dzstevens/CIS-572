@@ -13,7 +13,7 @@ Usage:
    
 To run, execute the following command from the root project directory:
         
-    python -m id3.main.py <training_input_file> <test_input_file> <model_output_file>
+    python -m id3.main <training_input_file> <test_input_file> <model_output_file>
     
 You will be presented with a menu to choose the p-value for the chi-squared test. 
 After you make your selection, the classifier will train on the training data 
