@@ -1,0 +1,17 @@
+IGORING
+-------
+Loan ID: Unique
+Amount Funded By Investors: Can't know before
+Loan Description: Text (may analyze later)
+Total Amount Funded: Can't know before
+Remaining Principal Funded by Investors: Can't know before (and partially equivalent to Status)
+Payments To Date (Funded by investors): Can't know before
+Remaining Principal: Can't know before (and partially equivalent to Status)
+Payments To Date: Can't know before
+City: Too many values (would be good to have population though)
+Screen Name: Unique
+Code: Unique
+Loan Title: Text (may analyze later)
+Accounts Now Delinquent: Always 0 for Statuses in question
+Delinquent Amount: Always 0 for Statuses in question
+Application Date: Used in other calculations
