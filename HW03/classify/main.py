@@ -1,12 +1,12 @@
 import classify.util as util
 import classify.classifiers as classifiers
 
-def main(classifier, test_file, model_file, target='spam'):
+def main(classifier, test_file, model_file):
     classifier.dump(model_file)
     count = correct = 0
     for row in util.get_rows(test_file):
-        is_spam = row[target]
-        prob = classifier.get_prob(row, target)
+        is_spam = row['spam']
+        prob = classifier.get_prob(row)
         print(round(prob, 4))
         if round(prob) == is_spam:
             correct += 1
@@ -28,6 +28,5 @@ if __name__ == '__main__':
     test = args[2]
     model = args[-1]
     opts = args[3:-1]
-    target = args[-2] if len(args) == 7 else 'spam'
     classifier = classifiers.get_classfier(name, train, opts)
-    main(classifier, test, model, target=target)
+    main(classifier, test, model) 

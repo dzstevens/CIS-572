@@ -1,0 +1,37 @@
+\section{Introduction}
+\label{introduction}
+With a traditional investment, a prospective investor purchases some sort of property or asset that he or she
+believe will aprreciate in value. Larger variance in the asset's expected value means larger potential returns,
+but it also means greater risk. The investor must consider this carefully to determine how much risk he or she 
+can tolerate.
+
+Peer-to-peer (P2P) lending breaks the mold of traditional investments. Rather than purchasing assets, a prospective 
+investor lends his or her capital to a set of borrowers. The borrow must then repay the lender with interest. 
+In this model, the maximum return is known up front. The risk does not come from variance in value, but rather 
+from the possibility that the loan could default before it has been fully paid-off.
+
+Lending Club\cite{lendingclub} is a fairly new company that matches borrowers with investors. With Lending Club, someone seeking a 
+loan can apply to be entered into the system. Lending club performs a credit history analysis on the applicant and 
+then either denies their application if they don't meet strict requirements, or assigns them a score (A through G) 
+that determines the interest rate of their loan and (theoretically) implies its risk level. Rates range from about 
+7.5\% for A loans to around 22.6\% for G loans. 
+
+Once a loan has been posted, ivestors have the possibility of funding it. Funding is done by buying \emph{notes}. A 
+note is \$25-worth of funding in one loan. This system allows investers to mitigate the risk of loans defaulting by 
+only investing small amounts in a large number of loans. Lending Club claims that everyone who has purchased 800+ 
+notes (\$20,000 worth) has acheived positive returns, with 93.76\% of ivestors experiencing loans between 6\% and 18+\%.
+
+Lending Club publishes all of their historical and current loan data, with extensive information about each loan. 
+Though the above rates of return sound decent, a natural question to ask is whether this data can be used to achieve 
+an `edge' when selecting notes for investment. The goal of this paper is to apply standard Machine Learning algorithms 
+to this data to generate a classifier 
+that can be used to choose the loans that will lead to a maximum return. In particular, the strategies used are logistic 
+regression, random forest classification and gradient boosting classification. The former classifier is a simple model 
+used as a baseline for evaluation. The latter two are more sophisticated ensemble methods that tend to have 
+very good performance in practice.
+
+The remainder of our paper is organized as follows.
+Section~\ref{background} provides a more detailed descrption of the problem and highlights previous related work. 
+Section~\ref{methods} details the approach that was taken to solve this problem, including key design decisions. 
+The systems developed are analyzed in Section~\ref{experiments}, including performance on real data.
+Finally, Section~\ref{conclusion} summarizes contributions and discusses future work.

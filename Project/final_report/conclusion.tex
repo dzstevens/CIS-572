@@ -1,0 +1,18 @@
+\section{Conclusion}
+Although this paper failed to obtain positive results, it nonetheless provides a foundation 
+for future work in the area of Machine Learning applied to P2P lending. In this paper, a linear 
+and two tree-based ensemble classifiers were applied to the problem and failed to get good results.
+Though it may be possible to train a different model successfully, it is likely that the best 
+aspect to explore in future work would be the feature representation. For example, textual analysis 
+of the loan description may give insight into the writers likelihood of defaulting. Additionally, 
+many of the numerical features, such as income and loan amount, may not scale linearly. If so, it may 
+be useful to bin them at different thresholds, or perhaps inlcude as a feature the square root or log
+of their values. Furthermore, this paper only considered loans that had run to completion. Though more 
+difficult to model, there is potential to learn from loans that are currently in progress. Lastly, 
+different outputs could be explored. Rather than outputting a probability of success, it could be 
+possible to train a regressor to directly compute the expected rate of return. If successful, the 
+output of the regressor could be used directly to choose notes without the potential translation 
+error. Using the methods outlined in this paper as a baseline, any or all of these approaches 
+can be taken and hopefully lead to a model that will give prospective investors an edge when 
+selecting notes.
+\label{conclusion}

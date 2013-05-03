@@ -28,9 +28,9 @@ class Classifier:
                 str_ += '{}\t{}\n'.format(k, round(self.weights[k], 4))
         return str_
 
-    def score(self, row, false=0, target='spam'):
+    def score(self, row, false=0):
         try:
-            del row[target]
+            del row['spam']
         except KeyError:
             pass
         score = self.weights['base']
@@ -40,11 +40,11 @@ class Classifier:
             score += self.weights[k] * v
         return score
 
-    def get_prob(self, row, target='spam'):
-        return sigmoid(self.score(row, target=target))
+    def get_prob(self, row):
+        return sigmoid(self.score(row))
 
-    def classify(self, row, target='spam'):
-        x = round(self.get_prob(row, target=target))
+    def classify(self, row):
+        x = round(self.get_prob(row))
         return x
 
     def dump(self, model_file):
@@ -54,7 +54,7 @@ class Classifier:
 
 class NaiveBayesClassifier(Classifier):
 
-    def __init__(self, train_data, beta=1, t='spam'):
+    def __init__(self, train_data, beta=1):
         self.counts = Counter()
         beta = int(beta)
         spam = 0
@@ -62,9 +62,9 @@ class NaiveBayesClassifier(Classifier):
         spam_prior = Counter()
         ham_prior = Counter()
         for row in util.get_rows(train_data):
-            if row[t]:
+            if row['spam']:
                 spam += 1
-                del row[t]
+                del row['spam']
                 spam_prior.update(row)
             else:
                 del row['spam']
@@ -89,7 +89,7 @@ class NaiveBayesClassifier(Classifier):
 
 class LogisticRegressionClassifier(Classifier):
     
-    def __init__(self, train_data, eta, sigma, t='spam'):
+    def __init__(self, train_data, eta, sigma):
         eta = float(eta)
         sigma = float(sigma)
         headers = ['base'] + util.get_headers(train_data)
@@ -97,8 +97,8 @@ class LogisticRegressionClassifier(Classifier):
         for i in range(100):
             gradient = dict.fromkeys(headers, 0)
             for row in util.get_rows(train_data):
-                target = row[t]
-                del row[target]
+                target = row['spam']
+                del row['spam']
                 row['base'] = 1
                 w = target - cond_log_likelihood(self.weights, row)
                 for f, x in row.items():
@@ -114,7 +114,7 @@ class LogisticRegressionClassifier(Classifier):
 
 class StochasticLogisticRegressionClassifier(Classifier):
     
-    def __init__(self, train_data, eta, sigma, t='spam'):
+    def __init__(self, train_data, eta, sigma):
         eta = float(eta)
         sigma = float(sigma)
         headers = ['base'] + util.get_headers(train_data)
@@ -122,8 +122,8 @@ class StochasticLogisticRegressionClassifier(Classifier):
         for i in range(100):
             gradient = defaultdict(float)
             for row in util.get_rows(train_data, shuffle=True):
-                target = row[t]
-                del row[t]
+                target = row['spam']
+                del row['spam']
                 row['base'] = 1
                 w = target - cond_log_likelihood(self.weights, row)
                 for f, x in row.items():
@@ -136,7 +136,7 @@ class StochasticLogisticRegressionClassifier(Classifier):
 
 class PerceptronClassifier(Classifier):
 
-    def __init__(self, train_data, eta, false=0, t='spam'):
+    def __init__(self, train_data, eta, false=0):
         eta = float(eta)
         self.false = int(false)
         headers = ['base'] + util.get_headers(train_data)
@@ -145,9 +145,9 @@ class PerceptronClassifier(Classifier):
             print(i+1)
             error = False
             for row in util.get_rows(train_data, false=self.false):
-                target = row[t]
-                del row[t]
-                output = self.classify(row, target=t)
+                target = row['spam']
+                del row['spam']
+                output = self.classify(row)
                 if output != target:
                     error = True
                     delta = eta * (target - output)
@@ -157,11 +157,11 @@ class PerceptronClassifier(Classifier):
             if not error:
                 break
 
-    def classify(self, row, target='spam'):
-        return 1 if self.score(row, self.false, target=target) > 0 else self.false
+    def classify(self, row):
+        return 1 if self.score(row, self.false) > 0 else self.false
 
-    def get_prob(self, row, target='spam'):
-        return sigmoid(self.score(row, self.false, target=target))
+    def get_prob(self, row):
+        return sigmoid(self.score(row, self.false))
 
 CLASSIFIERS = {'naive_bayes'   : NaiveBayesClassifier,
                'logistic'      : LogisticRegressionClassifier,

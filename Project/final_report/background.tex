@@ -1,0 +1,23 @@
+\section{Background}
+\label{background}
+The goal of almost any investor is achieve maximum return-on-ivestment. This is usually done by balancing potential profits 
+with known risks. As stated previously, the primary risk in P2P lending is the risk that a note will default before it has 
+been fullly paid off. Lending Club encapsulates a note's risk in a score called a \emph{loan grade}, which ranges from A to G
+(A being riskier than B, B riskier than C, etc.). This score is primarily based on the borrowers credit history. While credit 
+history is surely a very large factor in the default risk, it is unlikely to be a perfect predictor. An ideal system would 
+be one that perfectly divines whether or not a note will default. Then, all an investor would need to do to maximize returns 
+would be to have the system output all available notes that won't default and then choose the ones that will offer the 
+largest returns (based on the note's interest rate). Returns are maximized and risk is fully mitigated!
+
+Of course, this oracle-like system is most likely not possible. However, it does give insight into the problem at hand. Although 
+we cannot perfectly predict if a note will default, we \emph{can} build a classifier that tries to more accurately compute the 
+default \emph{probability} of a given loan. These probabilities will give the investors a better understanding of the risk 
+when selecting notes.\footnote{A more informative approach may be to train a \emph{regressor} that directly predicts return. 
+However, initial attempts at this performed abysmally and were abandoned.}
+
+Although there has been much research into using machine learning techniques to try to predict the stock market, 
+a literature search has not returned any previous accademic work investigating how those techniques might be applied 
+to P2P learning. There have been several blog posts\cite{superfacts, smartpeerlending} that talk about using support 
+vector machine classifiers to predict Lending Club note default rates, with varied success. In this paper, 
+random forest and gradient boosting ensemble clasifiers are trained on the problem, and it is the first documented 
+study to do so, to the best of the author's knowledge.
